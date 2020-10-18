@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Simple Chat</title>
+    <title>Notflix Party</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -14,52 +14,78 @@
 <header>
     <nav>
         <div class="nav-wrapper">
-            <a href="/" class="brand-logo right">Simple Chat</a>
+            <a href="/" class="brand-logo right">Notflix Party</a>
         </div>
     </nav>
 </header>
-<main id="app">
+<main>
     <div class="row">
         <div class="col s12">
-            <div class="card horizontal">
-                <div id="chat-messages" class="card-content" v-html="chatContent">
+            <div class="flex">
+                <div class="video-wrapper">
+                    <video id="video-player" preload style="width: 100%; max-height: calc(100vh - 125px);">
+                        <source src="/video/video.mp4" type="video/mp4">
+                    </video>
+                    <div id="button-wrapper" style="display: none;">
+                        <button id="button-play">Play</button>
+                        <button id="button-pause">Pause</button>
+                        <button id="button-audio">Toggle Audio</button>
+                    </div>
+                </div>
+
+                <div class="chat-wrapper" id="app">
+                    <div v-if="joined">
+                        <div id="chat-messages" class="card-content" v-html="chatContent">
+                        </div>
+
+                        <div class="input-field col s8">
+                            <input type="text" v-model="newMsg" @keyup.enter="send" autofocus>
+                        </div>
+                        <div class="input-field col s4">
+                            <button class="waves-effect waves-light btn" @click="send">
+                                <i class="material-icons right">chat</i>
+                                Send
+                            </button>
+                        </div>
+                        <div style="color: white; display: block;" class="col s12">
+                            <input
+                                type="checkbox"
+                                style="opacity: 1; left: inherit; position: inherit;"
+                                v-model="chatSounds" />
+                            Chat Blip?
+                        </div>
+
+                        <audio id="chatSound" src="/Pling-KevanGC-1485374730.mp3" />
+                    </div>
+
+                    <!-- "login" screen -->
+                    <div class="row" v-if="!joined">
+                        <div class="input-field col s8">
+                            <input type="email" v-model.trim="email" placeholder="Email" autofocus>
+                        </div>
+                        <div class="input-field col s8">
+                            <input type="text" v-model.trim="username" placeholder="Username" @keyup.enter="join()">
+                        </div>
+                        <div class="input-field col s4">
+                            <button class="waves-effect waves-light btn" @click="join()">
+                                <i class="material-icons right">done</i>
+                                Join
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row" v-if="joined">
-        <div class="input-field col s8">
-            <input type="text" v-model="newMsg" @keyup.enter="send">
-        </div>
-        <div class="input-field col s4">
-            <button class="waves-effect waves-light btn" @click="send">
-                <i class="material-icons right">chat</i>
-                Send
-            </button>
-        </div>
-    </div>
-    <div class="row" v-if="!joined">
-        <div class="input-field col s8">
-            <input type="email" v-model.trim="email" placeholder="Email">
-        </div>
-        <div class="input-field col s8">
-            <input type="text" v-model.trim="username" placeholder="Username">
-        </div>
-        <div class="input-field col s4">
-            <button class="waves-effect waves-light btn" @click="join()">
-                <i class="material-icons right">done</i>
-                Join
-            </button>
-        </div>
-    </div>
+
 </main>
 <footer class="page-footer">
 </footer>
-<script src="https://unpkg.com/vue@2.1.3/dist/vue.min.js"></script>
-<script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
-<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.js"></script>
+<script src="//cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
 <script src="/app.js"></script>
 </body>
 </html>

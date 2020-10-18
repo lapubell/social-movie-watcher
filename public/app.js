@@ -1,4 +1,18 @@
-new Vue({
+var vid = document.getElementById("video-player");
+var bPlay = document.getElementById("button-play");
+bPlay.onclick = function() {
+    vm.sendPlay();
+}
+var bPause = document.getElementById("button-pause");
+bPause.onclick = function() {
+    vm.sendPause();
+}
+var bAudio = document.getElementById("button-audio");
+bAudio.onclick = function() {
+    vid.muted = !vid.muted;
+}
+
+var vm = new Vue({
     el: '#app',
 
     data: {
@@ -7,7 +21,10 @@ new Vue({
         chatContent: '', // A running list of chat messages displayed on the screen
         email: null, // Email address used for grabbing an avatar
         username: null, // Our username
-        joined: false // True if email and username have been filled in
+        joined: false, // True if email and username have been filled in
+        videoIsPlaying: false, // local state var so that if people come and go they can sync up to the global status
+        audio: null,
+        chatSounds: true // wether or not to make a sound each time a chat happens
     },
 
     created: function() {
@@ -15,15 +32,54 @@ new Vue({
         this.ws = new WebSocket('ws://' + window.location.host + '/ws');
         this.ws.addEventListener('message', function(e) {
             var msg = JSON.parse(e.data);
-            self.chatContent += '<div class="chip">'
+
+            // check original initialization here
+            if (msg.initialMessage) {
+                vid.currentTime = msg.video.timestamp;
+                if (msg.video.isPlaying) {
+                    vid.play();
+                }
+            }
+
+            // check for various system messages here
+            if (msg.video) {
+                if (msg.newStatus === "play") {
+                    if (!self.videoIsPlaying) {
+                        console.log("was told to start playback")
+                        vid.play();
+                        self.videoIsPlaying = true
+                    }
+                }
+                if (msg.newStatus === "pause") {
+                    if (self.videoIsPlaying) {
+                        console.log("was told to pause playback")
+                        vid.pause();
+                        console.log("updating video timestamp to match incoming value");
+                        vid.currentTime = msg.video.timestamp;
+
+                        self.videoIsPlaying = false
+                    }
+                }
+            }
+
+            self.chatContent += '<div class="message"><div class="chip">'
                     + '<img src="' + self.gravatarURL(msg.email) + '">' // Avatar
                     + msg.username
                 + '</div>'
-                + emojione.toImage(msg.message) + '<br/>'; // Parse emojis
+                + emojione.toImage(msg.message) + '</div>'; // Parse emojis
 
-            var element = document.getElementById('chat-messages');
-            element.scrollTop = element.scrollHeight; // Auto scroll to the bottom
+            setTimeout(() => {
+                var element = document.getElementById('chat-messages');
+                element.scrollTop = element.scrollHeight+100; // Auto scroll to the bottom
+
+                if (self.chatSounds) {
+                    document.getElementById("chatSound").volume = 0.2;
+                    document.getElementById("chatSound").play();
+                }
+            }, 20);
+
         });
+        this.audio = new Audio("/Pling-KevanGC-1485374730.mp3");
     },
 
     methods: {
@@ -40,6 +96,42 @@ new Vue({
             }
         },
 
+        sendPlay: function() {
+            console.log("sending play signal to all")
+            this.ws.send(
+                JSON.stringify({
+                    message: '!!video-play!!'
+                }
+            ));
+            setTimeout(() => {
+                this.ws.send(
+                    JSON.stringify({
+                        email: this.email,
+                        username: this.username,
+                        message: '(played the video at ' + vid.currentTime + ' seconds)'
+                    }
+                ));
+            }, 100);
+        },
+
+        sendPause: function() {
+            this.ws.send(
+                JSON.stringify({
+                    message: '!!video-pause!!',
+                    timestamp: Math.round(vid.currentTime)
+                }
+            ));
+            setTimeout(() => {
+                this.ws.send(
+                    JSON.stringify({
+                        email: this.email,
+                        username: this.username,
+                        message: '(paused the video at ' + vid.currentTime + ' seconds)'
+                    }
+                ));
+            }, 100);
+        },
+
         join: function () {
             if (!this.email) {
                 Materialize.toast('You must enter an email', 2000);
@@ -52,10 +144,23 @@ new Vue({
             this.email = $('<p>').html(this.email).text();
             this.username = $('<p>').html(this.username).text();
             this.joined = true;
+
+            this.newMsg = "(just joined)"
+            this.send()
         },
 
         gravatarURL: function(email) {
             return 'http://www.gravatar.com/avatar/' + CryptoJS.MD5(email);
+        }
+    },
+
+    watch: {
+        joined() {
+            if (this.joined) {
+                $("#button-wrapper").show();
+            } else {
+                $("#button-wrapper").false();
+            }
         }
     }
 });

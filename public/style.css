@@ -2,6 +2,7 @@ body {
     display: flex;
     min-height: 100vh;
     flex-direction: column;
+    background-color: black;
 }
 
 main {
@@ -10,7 +11,48 @@ main {
 
 #chat-messages {
     min-height: 10vh;
-    height: 60vh;
+    height: 63vh;
     width: 100%;
     overflow-y: scroll;
+}
+
+.flex {
+    display: flex;
+}
+
+nav {
+    background-color: black;
+    height: 30px;
+    border-bottom: 1px solid #333;
+}
+
+nav .brand-logo {
+    font-size: 16px;
+    line-height: 32px;
+}
+
+footer.page-footer {
+    background-color: #333;
+}
+
+.video-wrapper {
+    flex: 4;
+    width: 80%;
+}
+
+.chat-wrapper {
+    flex: 1;
+    width: 20%;
+}
+
+input:not([type]), input[type=text], input[type=password], input[type=email], input[type=url], input[type=time], input[type=date], input[type=datetime], input[type=datetime-local], input[type=tel], input[type=number], input[type=search], textarea.materialize-textarea {
+    color: white;
+}
+
+.message {
+    color: tan;
+}
+.chip {
+    color: #ccc;
+    background-color: #333;
 }
