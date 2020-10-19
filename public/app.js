@@ -1,4 +1,27 @@
+// good ol global functions, yay appending to the window object!
+function fancyTimeFormat(duration) // https://stackoverflow.com/questions/3733227/javascript-seconds-to-minutes-and-seconds/11486026#11486026
+{
+    // Hours, minutes and seconds
+    var hrs = ~~(duration / 3600);
+    var mins = ~~((duration % 3600) / 60);
+    var secs = ~~duration % 60;
+
+    // Output like "1:01" or "4:03:59" or "123:03:59"
+    var ret = "";
+
+    if (hrs > 0) {
+        ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+    }
+
+    ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+    ret += "" + secs;
+    return ret;
+}
+
+// good ol global variables, yay appending to the window object!
 var vid = document.getElementById("video-player");
+
+
 var bPlay = document.getElementById("button-play");
 bPlay.onclick = function() {
     vm.sendPlay();
@@ -11,6 +34,15 @@ var bAudio = document.getElementById("button-audio");
 bAudio.onclick = function() {
     vid.muted = !vid.muted;
 }
+var bAudio = document.getElementById("button-back");
+bAudio.onclick = function() {
+    vm.sendBackSeconds();
+}
+
+setInterval(() => {
+    $("#playback").text(fancyTimeFormat(vid.currentTime) + " of " + fancyTimeFormat(vid.duration));
+}, 1000);
+
 
 var vm = new Vue({
     el: '#app',
@@ -108,7 +140,7 @@ var vm = new Vue({
                     JSON.stringify({
                         email: this.email,
                         username: this.username,
-                        message: '(played the video at ' + vid.currentTime + ' seconds)'
+                        message: '(played the video at ' + fancyTimeFormat(vid.currentTime) + ')'
                     }
                 ));
             }, 100);
@@ -126,10 +158,24 @@ var vm = new Vue({
                     JSON.stringify({
                         email: this.email,
                         username: this.username,
-                        message: '(paused the video at ' + vid.currentTime + ' seconds)'
+                        message: '(paused the video at ' + fancyTimeFormat(vid.currentTime) + ')'
                     }
                 ));
             }, 100);
+        },
+
+        sendBackSeconds: function () {
+            vid.pause();
+            var newTime = Math.round(vid.currentTime) - 15;
+            if (newTime < 0) {
+                vid.currentTime = 0;
+            } else {
+                vid.currentTime = newTime;
+            }
+            this.sendPause();
+            setTimeout(() => {
+                this.sendPlay();
+            }, 500);
         },
 
         join: function () {

@@ -56,3 +56,16 @@ input:not([type]), input[type=text], input[type=password], input[type=email], in
     color: #ccc;
     background-color: #333;
 }
+
+#button-wrapper {
+    opacity: 0;
+}
+
+.video-wrapper:hover #button-wrapper {
+    opacity: 1;
+}
+
+#playback {
+    float: right;
+    color: white;
+}
