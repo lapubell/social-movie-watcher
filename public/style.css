@@ -4,6 +4,7 @@ body {
     flex-direction: column;
     background-color: black;
     font-family: sans-serif;
+    margin: 0;
 }
 
 main {
@@ -23,7 +24,7 @@ main {
 
 nav {
     background-color: black;
-    height: 30px;
+    height: 40px;
     border-bottom: 1px solid #333;
 }
 
@@ -58,16 +59,24 @@ button {
     cursor: pointer;
 }
 
-input:not([type]), input[type=text], input[type=password], input[type=email], input[type=url], input[type=time], input[type=date], input[type=datetime], input[type=datetime-local], input[type=tel], input[type=number], input[type=search], textarea.materialize-textarea {
-    color: white;
-}
-
 .message {
     color: tan;
+    margin-bottom: 3px;
 }
 .chip {
     color: #ccc;
     background-color: #333;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+}
+.chip img {
+    width: 35px;
+    margin-right: 4px;
+}
+.message-text {
+    padding: 4px;
+    font-size: 18px;
 }
 
 #button-wrapper {
@@ -81,4 +90,20 @@ input:not([type]), input[type=text], input[type=password], input[type=email], in
 #playback {
     float: right;
     color: white;
+}
+
+.brand-logo {
+    padding: 5px;
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+input[type="email"], input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 0 5px 0;
+    padding: 5px;
+}
+.input-field {
+    padding: 5px;
 }

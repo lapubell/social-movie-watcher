@@ -40,7 +40,7 @@ bAudio.onclick = function() {
 }
 
 setInterval(() => {
-    $("#playback").text(fancyTimeFormat(vid.currentTime) + " of " + fancyTimeFormat(vid.duration));
+    document.getElementById("playback").textContent = fancyTimeFormat(vid.currentTime) + " of " + fancyTimeFormat(vid.duration);
 }, 1000);
 
 
@@ -64,8 +64,13 @@ var vm = new Vue({
     },
 
     created: function() {
+        this.email = localStorage.getItem('email');
+        this.username = localStorage.getItem('username');
+
         var self = this;
-        this.ws = new WebSocket('ws://' + window.location.host + '/ws');
+        var proto = window.parent.location.protocol === "http:" ? "ws": "wss";
+
+        this.ws = new WebSocket(proto + '://' + window.location.host + '/ws');
         this.ws.addEventListener('message', function(e) {
             var msg = JSON.parse(e.data);
 
@@ -74,41 +79,37 @@ var vm = new Vue({
                 vid.currentTime = msg.video.timestamp;
                 if (msg.video.isPlaying) {
                     vid.play();
+                    self.videoIsPlaying = true;
                 }
-            }
 
-            // populate the available video list
-            if (msg.videos) {
-                self.availableVideos = msg.videos;
-                return;
+                return
             }
 
             // check for various system messages here
             if (msg.video) {
                 if (msg.newStatus === "play") {
                     if (!self.videoIsPlaying) {
-                        console.log("was told to start playback")
                         vid.play();
                         self.videoIsPlaying = true
                     }
                 }
                 if (msg.newStatus === "pause") {
                     if (self.videoIsPlaying) {
-                        console.log("was told to pause playback")
                         vid.pause();
-                        console.log("updating video timestamp to match incoming value");
                         vid.currentTime = msg.video.timestamp;
 
                         self.videoIsPlaying = false
                     }
                 }
+
+                return
             }
 
             self.chatContent += '<div class="message"><div class="chip">'
                     + '<img src="' + self.gravatarURL(msg.email) + '">' // Avatar
                     + msg.username
                 + '</div>'
-                + msg.message + '</div>';
+                + '<div class="message-text">' + msg.message + '</div></div>';
 
             setTimeout(() => {
                 var element = document.getElementById('chat-messages');
@@ -121,7 +122,7 @@ var vm = new Vue({
                     document.getElementById("chatSound").volume = 0.2;
                     document.getElementById("chatSound").play();
                 }
-            }, 20);
+            }, 100);
 
         });
         this.audio = new Audio("/Pling-KevanGC-1485374730.mp3");
@@ -150,7 +151,7 @@ var vm = new Vue({
                     JSON.stringify({
                         email: this.email,
                         username: this.username,
-                        message: $('<p>').html(this.newMsg).text() // Strip out html
+                        message: this.newMsg
                     }
                 ));
                 this.newMsg = ''; // Reset newMsg
@@ -216,25 +217,39 @@ var vm = new Vue({
                 Materialize.toast('You must choose a username', 2000);
                 return
             }
-            this.email = $('<p>').html(this.email).text();
-            this.username = $('<p>').html(this.username).text();
+            this.email = this.email;
+            this.username = this.username;
             this.joined = true;
 
-            this.newMsg = "(just joined)"
-            this.send()
+            this.newMsg = "(just joined)";
+            this.send();
+
+            if (this.videoIsPlaying) {
+                vid.play();
+            }
+
+            localStorage.setItem('email', this.email);
+            localStorage.setItem('username', this.username);
         },
 
         gravatarURL: function(email) {
-            return 'http://www.gravatar.com/avatar/' + CryptoJS.MD5(email);
+            return 'https://www.gravatar.com/avatar/' + CryptoJS.MD5(email);
+        },
+
+        showEmoji: function() {
+            var trigger = document.getElementById("trigger");
+            window.picker.togglePicker(trigger);
         }
     },
 
     watch: {
         joined() {
+            var btnWrapper = document.getElementById("button-wrapper");
+
             if (this.joined) {
-                $("#button-wrapper").show();
+                btnWrapper.classList.remove("hidden");
             } else {
-                $("#button-wrapper").false();
+                btnWrapper.classList.add("hidden");
             }
         }
     }

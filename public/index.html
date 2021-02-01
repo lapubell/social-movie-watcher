@@ -10,7 +10,7 @@
 <header>
     <nav>
         <div class="nav-wrapper">
-            Social Video Watcher Party
+            <a href="#" class="brand-logo right">Social Video Watcher Party</a>
         </div>
     </nav>
 </header>
@@ -22,7 +22,7 @@
                     <video id="video-player" preload style="width: 100%; max-height: calc(100vh - 125px);">
                         <source src="/video/video.mp4" type="video/mp4">
                     </video>
-                    <div id="button-wrapper" style="display: none;">
+                    <div id="button-wrapper" class="hidden">
                         <button id="button-play">Play</button>
                         <button id="button-pause">Pause</button>
                         <button id="button-back">Back 15 seconds</button>
@@ -41,6 +41,8 @@
                         </div>
                         <div class="input-field col s4">
                             <button @click="send">Send</button>
+
+                            <button @click="showEmoji" id="trigger">Emoji</button>
                         </div>
                         <div style="color: white; display: block;" class="col s12">
                             <input
@@ -56,26 +58,12 @@
                     <!-- "login" screen -->
                     <div class="row" v-if="!joined">
                         <div class="input-field col s8">
-                            <input type="email" v-model.trim="email" placeholder="Email" autofocus>
+                            <label for="email">Email address:</label>
+                            <input type="email" id="email" v-model.trim="email" placeholder="Email" autofocus @keyup.enter="join()">
                         </div>
                         <div class="input-field col s8">
-                            <input type="text" v-model.trim="username" placeholder="Username" @keyup.enter="join()">
-                        </div>
-                        <div class="input-field col s8">
-                            <p>Which screening room?</p>
-                            <ul>
-                                <li v-for="room in rooms">
-                                    <a href="#" @click.prevent="joinRoom(room)">{{ room.name }}</a>
-                                </li>
-                            </ul>
-                            <button @click="creatingARoom">Create A Room</button>
-                            <div v-if="creatingRoom">
-                                <p style="color: white">Which movie?</p>
-                                <select v-model="chosenVideo">
-                                    <option v-for="video in availableVideos">{{ video }}</option>
-                                </select>
-                                <button @click="createRoom">Go!</button>
-                            </div>
+                            <label for="username">Username:</label>
+                            <input type="text"  id="username" v-model.trim="username" placeholder="Username" @keyup.enter="join()">
                         </div>
                         <div class="input-field col s4">
                             <button @click="join()">Join</button>
@@ -90,9 +78,8 @@
 <footer class="page-footer">
 </footer>
 <script src="//cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.js"></script>
-<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
 <script src="/app.js"></script>
+<script src="/bundle.js"></script>
 </body>
 </html>
