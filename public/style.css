@@ -3,6 +3,7 @@ body {
     min-height: 100vh;
     flex-direction: column;
     background-color: black;
+    font-family: sans-serif;
 }
 
 main {
@@ -26,9 +27,11 @@ nav {
     border-bottom: 1px solid #333;
 }
 
-nav .brand-logo {
+nav .nav-wrapper {
     font-size: 16px;
     line-height: 32px;
+    color: white;
+    text-align: right;
 }
 
 footer.page-footer {
@@ -43,6 +46,16 @@ footer.page-footer {
 .chat-wrapper {
     flex: 1;
     width: 20%;
+    color: white;
+}
+
+button {
+    color: black;
+    display: inline-block;
+    background-color: aquamarine;
+    padding: 5px 15px;
+    border: 0;
+    cursor: pointer;
 }
 
 input:not([type]), input[type=text], input[type=password], input[type=email], input[type=url], input[type=time], input[type=date], input[type=datetime], input[type=datetime-local], input[type=tel], input[type=number], input[type=search], textarea.materialize-textarea {

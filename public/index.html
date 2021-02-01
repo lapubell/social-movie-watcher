@@ -2,19 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Notflix Party</title>
+    <title>Social Video Watcher Party</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css"/>
     <link rel="stylesheet" href="/style.css">
-
 </head>
 <body>
 <header>
     <nav>
         <div class="nav-wrapper">
-            <a href="/" class="brand-logo right">Social Video Watcher Party</a>
+            Social Video Watcher Party
         </div>
     </nav>
 </header>
@@ -44,10 +40,7 @@
                             <input type="text" v-model="newMsg" @keyup.enter="send" autofocus>
                         </div>
                         <div class="input-field col s4">
-                            <button class="waves-effect waves-light btn" @click="send">
-                                <i class="material-icons right">chat</i>
-                                Send
-                            </button>
+                            <button @click="send">Send</button>
                         </div>
                         <div style="color: white; display: block;" class="col s12">
                             <input
@@ -68,11 +61,24 @@
                         <div class="input-field col s8">
                             <input type="text" v-model.trim="username" placeholder="Username" @keyup.enter="join()">
                         </div>
+                        <div class="input-field col s8">
+                            <p>Which screening room?</p>
+                            <ul>
+                                <li v-for="room in rooms">
+                                    <a href="#" @click.prevent="joinRoom(room)">{{ room.name }}</a>
+                                </li>
+                            </ul>
+                            <button @click="creatingARoom">Create A Room</button>
+                            <div v-if="creatingRoom">
+                                <p style="color: white">Which movie?</p>
+                                <select v-model="chosenVideo">
+                                    <option v-for="video in availableVideos">{{ video }}</option>
+                                </select>
+                                <button @click="createRoom">Go!</button>
+                            </div>
+                        </div>
                         <div class="input-field col s4">
-                            <button class="waves-effect waves-light btn" @click="join()">
-                                <i class="material-icons right">done</i>
-                                Join
-                            </button>
+                            <button @click="join()">Join</button>
                         </div>
                     </div>
                 </div>
@@ -84,7 +90,6 @@
 <footer class="page-footer">
 </footer>
 <script src="//cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.js"></script>
-<script src="//cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
 <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>

@@ -56,7 +56,11 @@ var vm = new Vue({
         joined: false, // True if email and username have been filled in
         videoIsPlaying: false, // local state var so that if people come and go they can sync up to the global status
         audio: null,
-        chatSounds: true // wether or not to make a sound each time a chat happens
+        chatSounds: true, // wether or not to make a sound each time a chat happens
+        rooms: [],
+        creatingRoom: false,
+        chosenVideo: "",
+        availableVideos: []
     },
 
     created: function() {
@@ -71,6 +75,12 @@ var vm = new Vue({
                 if (msg.video.isPlaying) {
                     vid.play();
                 }
+            }
+
+            // populate the available video list
+            if (msg.videos) {
+                self.availableVideos = msg.videos;
+                return;
             }
 
             // check for various system messages here
@@ -98,10 +108,13 @@ var vm = new Vue({
                     + '<img src="' + self.gravatarURL(msg.email) + '">' // Avatar
                     + msg.username
                 + '</div>'
-                + emojione.toImage(msg.message) + '</div>'; // Parse emojis
+                + msg.message + '</div>';
 
             setTimeout(() => {
                 var element = document.getElementById('chat-messages');
+                if (!element) {
+                    return;
+                }
                 element.scrollTop = element.scrollHeight+100; // Auto scroll to the bottom
 
                 if (self.chatSounds) {
@@ -115,6 +128,22 @@ var vm = new Vue({
     },
 
     methods: {
+        creatingARoom: function() {
+            this.creatingRoom = true;
+            this.ws.send(
+                JSON.stringify({
+                    message: "!!available-videos!!"
+                })
+            );
+        },
+        createRoom: function() {
+            this.we.send(
+                JSON.stringify({
+                    message: "!!create-room!!",
+                    username: this.chosenVideo
+                })
+            );
+        },
         send: function () {
             if (this.newMsg != '') {
                 this.ws.send(

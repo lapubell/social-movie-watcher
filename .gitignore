@@ -1,2 +1,5 @@
 .idea
 video/*.mp4
+public/uploads/*.jpg
+public/uploads/*.png
+src/.env
