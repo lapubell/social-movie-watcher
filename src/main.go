@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -23,6 +26,10 @@ var upgrader = websocket.Upgrader{
 }
 
 func main() {
+	v = Video{
+		Video: "/video/video.mp4",
+	}
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("Error loading in ENV file, using defaults")
@@ -36,7 +43,21 @@ func main() {
 	// massive video files need to be broken up into smaller bits for easier streaming
 	http.HandleFunc("/video/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Cache-Control", "no-cache, max-age=0")
-		http.ServeFile(w, r, "../video/video.mp4")
+
+		filename := strings.Replace(r.URL.String(), "/video/", "", 1)
+		filename, err := url.QueryUnescape(filename)
+		// if err != nil {
+		// 	fmt.Println(os.Getenv("VIDEO_FOLDER") + filename)
+		// 	http.ServeFile(w, r, "../video/video.mp4")
+		// }
+		_, err = os.Stat(os.Getenv("VIDEO_FOLDER") + filename)
+		if os.IsNotExist(err) {
+			fmt.Println(os.Getenv("VIDEO_FOLDER") + filename)
+			http.ServeFile(w, r, "../video/video.mp4")
+		}
+		// fmt.Println(os.Getenv("VIDEO_FOLDER") + filename)
+
+		http.ServeFile(w, r, os.Getenv("VIDEO_FOLDER")+filename)
 	})
 
 	// Create a simple file server

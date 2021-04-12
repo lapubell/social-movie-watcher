@@ -19,6 +19,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 
 	// now that we have registered the new connection, let's send the initial
 	// state of the video
+	// v.Video = "/video/video.mp4"
 	ws.WriteJSON(map[string]interface{}{
 		"initialMessage": true,
 		"video":          v,

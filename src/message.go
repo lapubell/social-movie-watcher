@@ -1,6 +1,9 @@
 package main
 
-import "log"
+import (
+	"log"
+	"strings"
+)
 
 // Message object
 type Message struct {
@@ -43,6 +46,20 @@ func handleMessages() {
 			}
 			sendToAll(systemMessage)
 			continue
+		}
+
+		if strings.HasPrefix(msg.Message, "!!change:") {
+			v.CurrentTimestamp = 0
+			newFile := "/video/" + parseNewVid(msg.Message)
+			v.Video = newFile
+
+			systemMessage := map[string]interface{}{
+				"video":     v,
+				"changeTo":  newFile,
+				"newStatus": "change",
+			}
+			sendToAll(systemMessage)
+			// continue
 		}
 
 		// default, send the chatted message to all clients

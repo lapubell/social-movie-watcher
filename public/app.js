@@ -76,6 +76,7 @@ var vm = new Vue({
 
             // check original initialization here
             if (msg.initialMessage) {
+                vid.setAttribute("src", msg.video.video)
                 vid.currentTime = msg.video.timestamp;
                 if (msg.video.isPlaying) {
                     vid.play();
@@ -101,12 +102,17 @@ var vm = new Vue({
                         self.videoIsPlaying = false
                     }
                 }
+                if (msg.newStatus === "change") {
+                    vid.pause()
+                    vid.setAttribute("src", msg.changeTo)
+                    vid.play()
+                }
 
                 return
             }
 
             self.chatContent += '<div class="message"><div class="chip">'
-                    + '<img src="' + self.gravatarURL(msg.email) + '">' // Avatar
+                    + '<img style="width: 35px; height: 35px;" src="' + self.gravatarURL(msg.email) + '">' // Avatar
                     + msg.username
                 + '</div>'
                 + '<div class="message-text">' + msg.message + '</div></div>';
