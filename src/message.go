@@ -42,7 +42,8 @@ func handleMessages() {
 
 		if msg.Message == "!!available-videos!!" {
 			systemMessage := map[string]interface{}{
-				"videos": availableVideos(),
+				"videos":    availableVideos(),
+				"newStatus": "list",
 			}
 			sendToAll(systemMessage)
 			continue
@@ -50,6 +51,7 @@ func handleMessages() {
 
 		if strings.HasPrefix(msg.Message, "!!change:") {
 			v.CurrentTimestamp = 0
+			v.IsPlaying = true
 			newFile := "/video/" + parseNewVid(msg.Message)
 			v.Video = newFile
 
@@ -59,8 +61,10 @@ func handleMessages() {
 				"newStatus": "change",
 			}
 			sendToAll(systemMessage)
-			// continue
+			continue
 		}
+
+		msg.Message = checkForImageTransform(msg.Message)
 
 		// default, send the chatted message to all clients
 		sendToAll(msg)

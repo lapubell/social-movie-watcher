@@ -20,6 +20,15 @@ function fancyTimeFormat(duration) // https://stackoverflow.com/questions/373322
 
 // good ol global variables, yay appending to the window object!
 var vid = document.getElementById("video-player");
+vid.addEventListener('ended', function() {
+    vm.videoIsPlaying = false;
+});
+vid.addEventListener('play', function() {
+    vm.videoIsPlaying = true;
+});
+vid.addEventListener('pause', function() {
+    vm.videoIsPlaying = false;
+});
 
 
 var bPlay = document.getElementById("button-play");
@@ -87,25 +96,29 @@ var vm = new Vue({
             }
 
             // check for various system messages here
-            if (msg.video) {
+            if (msg.newStatus) {
                 if (msg.newStatus === "play") {
                     if (!self.videoIsPlaying) {
                         vid.play();
-                        self.videoIsPlaying = true
                     }
+                    self.videoIsPlaying = true
                 }
                 if (msg.newStatus === "pause") {
                     if (self.videoIsPlaying) {
                         vid.pause();
                         vid.currentTime = msg.video.timestamp;
-
-                        self.videoIsPlaying = false
                     }
+                    self.videoIsPlaying = false
                 }
                 if (msg.newStatus === "change") {
                     vid.pause()
                     vid.setAttribute("src", msg.changeTo)
                     vid.play()
+                    self.videoIsPlaying = true
+                }
+                if (msg.newStatus === "list") {
+                    self.availableVideos = msg.videos
+                    console.log(msg)
                 }
 
                 return
@@ -236,6 +249,9 @@ var vm = new Vue({
 
             localStorage.setItem('email', this.email);
             localStorage.setItem('username', this.username);
+
+            this.newMsg = "!!available-videos!!";
+            this.send();
         },
 
         gravatarURL: function(email) {
@@ -245,6 +261,16 @@ var vm = new Vue({
         showEmoji: function() {
             var trigger = document.getElementById("trigger");
             window.picker.togglePicker(trigger);
+        },
+
+        switchMovie(e) {
+            console.log("switch!", e.target.value)
+
+            this.newMsg = `!!change:${e.target.value}!!`;
+            this.send();
+        },
+        isCurrentVid(video) {
+            return "/video/"+video === vid.getAttribute("src")
         }
     },
 

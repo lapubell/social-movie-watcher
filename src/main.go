@@ -26,13 +26,14 @@ var upgrader = websocket.Upgrader{
 }
 
 func main() {
-	v = Video{
-		Video: "/video/video.mp4",
-	}
-
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("Error loading in ENV file, using defaults")
+	}
+
+	// instantiante the default video struct
+	v = Video{
+		Video: "/video/video.mp4",
 	}
 
 	screeningRooms = make([]room, 1)
@@ -46,22 +47,16 @@ func main() {
 
 		filename := strings.Replace(r.URL.String(), "/video/", "", 1)
 		filename, err := url.QueryUnescape(filename)
-		// if err != nil {
-		// 	fmt.Println(os.Getenv("VIDEO_FOLDER") + filename)
-		// 	http.ServeFile(w, r, "../video/video.mp4")
-		// }
 		_, err = os.Stat(os.Getenv("VIDEO_FOLDER") + filename)
 		if os.IsNotExist(err) {
 			fmt.Println(os.Getenv("VIDEO_FOLDER") + filename)
 			http.ServeFile(w, r, "../video/video.mp4")
 		}
-		// fmt.Println(os.Getenv("VIDEO_FOLDER") + filename)
-
 		http.ServeFile(w, r, os.Getenv("VIDEO_FOLDER")+filename)
 	})
 
 	// Create a simple file server
-	fs := http.FileServer(http.Dir("../public"))
+	fs := noCacheStaticAssets(http.FileServer(http.Dir("../public")))
 	http.Handle("/", fs)
 
 	// Configure websocket route
