@@ -15,7 +15,9 @@ func availableVideos() []string {
 			return nil
 		}
 		output := strings.Replace(path, root, "", 1)
-		files = append(files, output)
+		if output != ".gitkeep" && output != "video.mp4" {
+			files = append(files, output)
+		}
 		return nil
 	})
 	if err != nil {
