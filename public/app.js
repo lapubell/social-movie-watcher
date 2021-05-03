@@ -315,8 +315,8 @@ var vm = new Vue({
                 var timeLeft = animationEnd - Date.now();
 
                 if (timeLeft <= 0) {
-                    return clearInterval(interval);
                     canvasOverlay.style.display = "none";
+                    return clearInterval(interval);
                 }
 
                 var particleCount = 50 * (timeLeft / duration);

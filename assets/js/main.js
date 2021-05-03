@@ -3,6 +3,7 @@ const confetti = require('canvas-confetti');
 
 let myCanvas = document.createElement('canvas');
 document.getElementById("video-app").appendChild(myCanvas);
+myCanvas.style.display = "none";
 let myConfetti = confetti.create(myCanvas, {
   resize: true,
   useWorker: true
