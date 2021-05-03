@@ -3,4 +3,5 @@ video/*.mp4
 public/uploads/*.jpg
 public/uploads/*.png
 src/.env
+src/src
 assets/js/node_modules

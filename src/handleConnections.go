@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"strings"
 )
 
 func handleConnections(w http.ResponseWriter, r *http.Request) {
@@ -40,6 +41,13 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 		if msg.Message == "(just joined)" {
 			participants[ws] = msg.Username
 		}
+
+		if strings.HasPrefix(msg.Message, "!!changeName:") {
+			newName := parseNewNameFromMessage(msg.Message)
+			participants[ws] = newName
+			continue
+		}
+
 		// Send the newly received message to the broadcast channel
 		broadcast <- msg
 	}

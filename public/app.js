@@ -140,8 +140,6 @@ var vm = new Vue({
 
             if (msg.message.toLowerCase() === "it me") {
                 self.itMe();
-            } else {
-                console.log(msg.message);
             }
 
             setTimeout(() => {
@@ -274,6 +272,9 @@ var vm = new Vue({
             localStorage.setItem('username', this.username);
 
             this.newMsg = "(\"" + this.oldUsername + "\" is now \"" + this.username + "\")";
+            this.send();
+
+            this.newMsg = `!!changeName:NEW::${this.username}!!`;
             this.send();
 
             this.oldUsername = this.username;
