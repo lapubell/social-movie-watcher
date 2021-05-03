@@ -25,9 +25,11 @@ vid.addEventListener('ended', function() {
 });
 vid.addEventListener('play', function() {
     vm.videoIsPlaying = true;
+    vm.drawerShown = false;
 });
 vid.addEventListener('pause', function() {
     vm.videoIsPlaying = false;
+    vm.drawerShown = true;
 });
 
 
@@ -62,6 +64,7 @@ var vm = new Vue({
         chatContent: '', // A running list of chat messages displayed on the screen
         email: null, // Email address used for grabbing an avatar
         username: null, // Our username
+        oldUsername: null, // Our old username, for use when we switch usernames
         joined: false, // True if email and username have been filled in
         videoIsPlaying: false, // local state var so that if people come and go they can sync up to the global status
         audio: null,
@@ -69,7 +72,10 @@ var vm = new Vue({
         rooms: [],
         creatingRoom: false,
         chosenVideo: "",
-        availableVideos: []
+        availableVideos: [],
+        lurkers: [],
+        drawerShown: false,
+        showChangeName: false,
     },
 
     created: function() {
@@ -118,7 +124,9 @@ var vm = new Vue({
                 }
                 if (msg.newStatus === "list") {
                     self.availableVideos = msg.videos
-                    console.log(msg)
+                }
+                if (msg.newStatus === "peeps") {
+                    self.lurkers = msg.peeps
                 }
 
                 return
@@ -129,6 +137,12 @@ var vm = new Vue({
                     + msg.username
                 + '</div>'
                 + '<div class="message-text">' + msg.message + '</div></div>';
+
+            if (msg.message.toLowerCase() === "it me") {
+                self.itMe();
+            } else {
+                console.log(msg.message);
+            }
 
             setTimeout(() => {
                 var element = document.getElementById('chat-messages');
@@ -238,6 +252,7 @@ var vm = new Vue({
             }
             this.email = this.email;
             this.username = this.username;
+            this.oldUsername = this.username;
             this.joined = true;
 
             this.newMsg = "(just joined)";
@@ -252,6 +267,18 @@ var vm = new Vue({
 
             this.newMsg = "!!available-videos!!";
             this.send();
+        },
+
+        updateName: function() {
+            localStorage.setItem('email', this.email);
+            localStorage.setItem('username', this.username);
+
+            this.newMsg = "(\"" + this.oldUsername + "\" is now \"" + this.username + "\")";
+            this.send();
+
+            this.oldUsername = this.username;
+
+            this.showChangeName = false;
         },
 
         gravatarURL: function(email) {
@@ -271,6 +298,31 @@ var vm = new Vue({
         },
         isCurrentVid(video) {
             return "/video/"+video === vid.getAttribute("src")
+        },
+        itMe() {
+            var duration = 1.5 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+            var canvasOverlay = document.getElementsByTagName("canvas")[0];
+            canvasOverlay.style.display = "block";
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                    canvasOverlay.style.display = "none";
+                }
+
+                var particleCount = 50 * (timeLeft / duration);
+                // since particles fall down, start a bit higher than random
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
         }
     },
 

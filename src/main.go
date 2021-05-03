@@ -8,15 +8,18 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/joho/godotenv"
 )
 
-var clients = make(map[*websocket.Conn]bool) // connected clients
-var broadcast = make(chan Message)           // broadcast channel
-var v Video                                  // video state machine
+var clients = make(map[*websocket.Conn]bool)        // connected clients
+var participants = make(map[*websocket.Conn]string) // connected clients with name
+var broadcast = make(chan Message)                  // broadcast channel
+var v Video                                         // video state machine
+var wsMutex sync.Mutex                              // web socket concurrent write protector
 
 // Configure the upgrader
 var upgrader = websocket.Upgrader{
@@ -40,6 +43,10 @@ func main() {
 
 	// update the video timestamp in a go routine
 	go incrementVideoTimestamp()
+
+	// start broadcasting system events out to all the participants
+	go broadcastChatRoomPeople()
+	go announceVideos()
 
 	// massive video files need to be broken up into smaller bits for easier streaming
 	http.HandleFunc("/video/", func(w http.ResponseWriter, r *http.Request) {

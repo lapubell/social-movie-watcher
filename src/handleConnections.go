@@ -16,6 +16,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 
 	// Register our new client
 	clients[ws] = true
+	participants[ws] = ""
 
 	// now that we have registered the new connection, let's send the initial
 	// state of the video
@@ -32,7 +33,12 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Printf("error: %v", err)
 			delete(clients, ws)
+			delete(participants, ws)
 			break
+		}
+
+		if msg.Message == "(just joined)" {
+			participants[ws] = msg.Username
 		}
 		// Send the newly received message to the broadcast channel
 		broadcast <- msg

@@ -40,6 +40,15 @@ func handleMessages() {
 			continue
 		}
 
+		if msg.Message == "!!who-dis!!" {
+			systemMessage := map[string]interface{}{
+				"peeps":     announceChatRoomPeople(),
+				"newStatus": "peeps",
+			}
+			sendToAll(systemMessage)
+			continue
+		}
+
 		if msg.Message == "!!available-videos!!" {
 			systemMessage := map[string]interface{}{
 				"videos":    availableVideos(),
@@ -72,6 +81,9 @@ func handleMessages() {
 }
 
 func sendToAll(thing interface{}) {
+	wsMutex.Lock()
+	defer wsMutex.Unlock()
+
 	// Send it out to every client that is currently connected
 	for client := range clients {
 		err := client.WriteJSON(thing)

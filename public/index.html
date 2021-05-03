@@ -10,13 +10,13 @@
 <header>
     <nav>
         <div class="nav-wrapper">
-            <a href="#" class="brand-logo right">Social Video Watcher Party</a>
+            <span class="brand-logo right">Social Video Watcher Party</span>
         </div>
     </nav>
 </header>
 <main>
     <div class="flex">
-        <div class="video-wrapper">
+        <div class="video-wrapper" id="video-app">
             <video id="video-player" preload style="width: 100%; max-height: calc(100vh - 125px);">
                 <source src="/video/video.mp4" type="video/mp4">
             </video>
@@ -35,7 +35,7 @@
                 </div>
 
                 <div class="input-field">
-                    <input type="text" v-model="newMsg" @keyup.enter="send" autofocus>
+                    <input type="text" v-model="newMsg" @keyup.enter="send" autofocus data-lpignore="true">
                 </div>
 
                 <div class="chat-controls">
@@ -53,11 +53,45 @@
                     </div>
                 </div>
 
-                <div v-if="!videoIsPlaying" class="video-switcher">
-                    <p>Video paused, watch something else?</p>
-                    <select @change="switchMovie($event)">
-                        <option v-for="vid in availableVideos" :value="vid" :selected="isCurrentVid(vid)">{{ vid }}</option>
-                    </select>
+                <div class="app-controls" :class="{'shown': drawerShown}">
+                    <a href="#" @click.prevent="drawerShown = !drawerShown">
+                        <svg v-if="!drawerShown" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                            <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                        </svg>
+                        <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0v2z"/>
+                            <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3z"/>
+                        </svg>
+                    </a>
+                    <div class="video-switcher">
+                        <p>Watch something else?</p>
+                        <select @change="switchMovie($event)">
+                            <option v-for="vid in availableVideos" :value="vid" :selected="isCurrentVid(vid)">{{ vid }}</option>
+                        </select>
+                    </div>
+
+                    <div v-if="lurkers" class="lurkers">
+                        Lurkers lurking:
+                        <ul>
+                            <li v-for="(lurker, index) in lurkers" v-if="lurker">{{ lurker }}</li>
+                        </ul>
+                    </div>
+
+                    <div class="name-changer">
+
+                        <template v-if="showChangeName">
+                            <input type="text" v-model="username" @keydown.enter="updateName">
+                            <input type="email" v-model="email" @keydown.enter="updateName">
+                            <button @click="updateName">Lock it in</button>
+                        </template>
+
+                        <button @click="showChangeName = !showChangeName">
+                            <span v-if="!showChangeName">Wanna change your name?</span>
+                            <span v-else>Nevermind</span>
+                        </button>
+                    </div>
+
                 </div>
 
                 <audio id="chatSound" src="/Pling-KevanGC-1485374730.mp3" />

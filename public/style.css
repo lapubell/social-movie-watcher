@@ -69,6 +69,8 @@ footer.page-footer {
     flex: 1;
     width: 20%;
     color: white;
+    position: relative;
+    z-index: 1;
 }
 
 button {
@@ -98,13 +100,17 @@ button {
 .message-text {
     padding: 4px;
     font-size: 18px;
+    overflow: hidden;
 }
 
 #button-wrapper {
     opacity: 0;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
 }
 
-.video-wrapper:hover #button-wrapper {
+#button-wrapper:hover {
     opacity: 1;
 }
 
@@ -135,11 +141,11 @@ input[type="email"], input[type="text"] {
 }
 
 .video-switcher {
-    padding: 5px;
+    padding: 0 0 15px;
 }
 
 .video-switcher p {
-    margin-bottom: 5px;
+    margin: 0 0 5px;
 }
 
 #chat-messages::-webkit-scrollbar {
@@ -152,4 +158,63 @@ input[type="email"], input[type="text"] {
 
 #chat-messages::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.3);    /* color of the scroll thumb */
+}
+
+.app-controls {
+    position: fixed;
+    top: 0;
+    right: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: all 0.5s ease;
+    width: 270px;
+    padding: 15px;
+    color: white;
+    border: 2px solid aquamarine;
+}
+
+.app-controls.shown {
+    transform: translateX(300px);
+}
+
+.app-controls select {
+    width: 100%;
+}
+
+.app-controls a {
+    display: flex;
+    position: absolute;
+    top: -2px;
+    width: 40px;
+    right: -40px;
+    background-color: aquamarine;
+    color: black;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.app-controls a svg {
+    width: 20px;
+    height: 20px;
+}
+
+.app-controls .lurkers ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.name-changer {
+    margin-top: 30px;
+}
+
+canvas {
+    /* display: none; */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
 }

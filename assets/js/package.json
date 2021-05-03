@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "@joeattardi/emoji-button": "^4.6.0"
+    "@joeattardi/emoji-button": "^4.6.0",
+    "canvas-confetti": "^1.4.0"
   },
   "devDependencies": {
     "webpack": "^5.19.0",
