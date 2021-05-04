@@ -138,8 +138,15 @@ var vm = new Vue({
                 + '</div>'
                 + '<div class="message-text">' + msg.message + '</div></div>';
 
-            if (msg.message.toLowerCase() === "it me") {
-                self.itMe();
+            if (msg.message.toLowerCase().substr(0, 5) === "it me") {
+                let duration = msg.message.substr(5).length;
+                if (duration < 1.5) {
+                    duration = 1.5;
+                }
+                if (duration > 10) {
+                    duration = 10;
+                }
+                self.itMe(duration);
             }
 
             setTimeout(() => {
@@ -300,8 +307,8 @@ var vm = new Vue({
         isCurrentVid(video) {
             return "/video/"+video === vid.getAttribute("src")
         },
-        itMe() {
-            var duration = 1.5 * 1000;
+        itMe(seconds) {
+            var duration = seconds * 1000;
             var animationEnd = Date.now() + duration;
             var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
