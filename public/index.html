@@ -30,8 +30,17 @@
         </div>
 
         <div class="chat-wrapper" id="app">
-            <div v-if="joined" class="flex flex-column height-100">
-                <div id="chat-messages" class="card-content" v-html="chatContent">
+            <div v-if="joined && error === ''" class="flex flex-column height-100">
+                <div id="chat-messages" class="card-content">
+                    <template v-for="(m, i) in chatMessages">
+                        <div class="message">
+                            <div class="chip">
+                                <img style="width: 35px; height: 35px;" :src="m.avatarURL">
+                                {{ m.username }}
+                            </div>
+                            <div class="message-text" v-html='m.message'/>
+                        </div>
+                    </template>
                 </div>
 
                 <div class="input-field">
@@ -95,6 +104,16 @@
                 </div>
 
                 <audio id="chatSound" src="/Pling-KevanGC-1485374730.mp3" />
+            </div>
+
+            <div v-if="error !== ''">
+                <h1>Uh oh, there's an error:<br />
+                    {{ error }}
+                </h1>
+
+                <div v-if="error === 'No websocket'">
+                    <button @click.prevent="wsInitialize">Reconnect</button>
+                </div>
             </div>
 
             <!-- "login" screen -->

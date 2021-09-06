@@ -61,7 +61,9 @@ var vm = new Vue({
     data: {
         ws: null, // Our websocket
         newMsg: '', // Holds new messages to be sent to the server
+        error: '',
         chatContent: '', // A running list of chat messages displayed on the screen
+        chatMessages: [],
         email: null, // Email address used for grabbing an avatar
         username: null, // Our username
         oldUsername: null, // Our old username, for use when we switch usernames
@@ -81,92 +83,109 @@ var vm = new Vue({
     created: function() {
         this.email = localStorage.getItem('email');
         this.username = localStorage.getItem('username');
-
-        var self = this;
-        var proto = window.parent.location.protocol === "http:" ? "ws": "wss";
-
-        this.ws = new WebSocket(proto + '://' + window.location.host + '/ws');
-        this.ws.addEventListener('message', function(e) {
-            var msg = JSON.parse(e.data);
-
-            // check original initialization here
-            if (msg.initialMessage) {
-                vid.setAttribute("src", msg.video.video)
-                vid.currentTime = msg.video.timestamp;
-                if (msg.video.isPlaying) {
-                    vid.play();
-                    self.videoIsPlaying = true;
-                }
-
-                return
-            }
-
-            // check for various system messages here
-            if (msg.newStatus) {
-                if (msg.newStatus === "play") {
-                    if (!self.videoIsPlaying) {
-                        vid.play();
-                    }
-                    self.videoIsPlaying = true
-                }
-                if (msg.newStatus === "pause") {
-                    if (self.videoIsPlaying) {
-                        vid.pause();
-                        vid.currentTime = msg.video.timestamp;
-                    }
-                    self.videoIsPlaying = false
-                }
-                if (msg.newStatus === "change") {
-                    vid.pause()
-                    vid.setAttribute("src", msg.changeTo)
-                    vid.play()
-                    self.videoIsPlaying = true
-                }
-                if (msg.newStatus === "list") {
-                    self.availableVideos = msg.videos
-                }
-                if (msg.newStatus === "peeps") {
-                    self.lurkers = msg.peeps
-                }
-
-                return
-            }
-
-            self.chatContent += '<div class="message"><div class="chip">'
-                    + '<img style="width: 35px; height: 35px;" src="' + self.gravatarURL(msg.email) + '">' // Avatar
-                    + msg.username
-                + '</div>'
-                + '<div class="message-text">' + msg.message + '</div></div>';
-
-            if (msg.message.toLowerCase().substr(0, 5) === "it me") {
-                let duration = msg.message.substr(5).length;
-                if (duration < 1.5) {
-                    duration = 1.5;
-                }
-                if (duration > 10) {
-                    duration = 10;
-                }
-                self.itMe(duration);
-            }
-
-            setTimeout(() => {
-                var element = document.getElementById('chat-messages');
-                if (!element) {
-                    return;
-                }
-                element.scrollTop = element.scrollHeight+100; // Auto scroll to the bottom
-
-                if (self.chatSounds) {
-                    document.getElementById("chatSound").volume = 0.2;
-                    document.getElementById("chatSound").play();
-                }
-            }, 100);
-
-        });
         this.audio = new Audio("/Pling-KevanGC-1485374730.mp3");
+
+        this.wsInitialize();
     },
 
     methods: {
+        wsInitialize: function() {
+            // reset it to null in case it's something weird
+            this.ws = null;
+            this.error = "";
+
+            // bind new WS connection
+            var self = this;
+            var proto = window.parent.location.protocol === "http:" ? "ws": "wss";
+            this.ws = new WebSocket(proto + '://' + window.location.host + '/ws');
+            this.ws.addEventListener('message', function(e) {
+                var msg = JSON.parse(e.data);
+
+                // check original initialization here
+                if (msg.initialMessage) {
+                    vid.setAttribute("src", msg.video.video)
+                    vid.currentTime = msg.video.timestamp;
+                    if (msg.video.isPlaying) {
+                        vid.play();
+                        self.videoIsPlaying = true;
+                    }
+
+                    return
+                }
+
+                // check for various system messages here
+                if (msg.newStatus) {
+                    if (msg.newStatus === "play") {
+                        if (!self.videoIsPlaying) {
+                            vid.play();
+                        }
+                        self.videoIsPlaying = true
+                    }
+                    if (msg.newStatus === "pause") {
+                        if (self.videoIsPlaying) {
+                            vid.pause();
+                            vid.currentTime = msg.video.timestamp;
+                        }
+                        self.videoIsPlaying = false
+                    }
+                    if (msg.newStatus === "change") {
+                        vid.pause()
+                        vid.setAttribute("src", msg.changeTo)
+                        vid.play()
+                        self.videoIsPlaying = true
+                    }
+                    if (msg.newStatus === "list") {
+                        self.availableVideos = msg.videos
+                    }
+                    if (msg.newStatus === "peeps") {
+                        self.lurkers = msg.peeps
+                    }
+
+                    return
+                }
+
+                var avatar = self.gravatarURL(msg.email);
+                self.chatMessages.push({
+                    avatarURL: avatar,
+                    username: msg.username,
+                    message: msg.message
+                });
+                // self.chatContent += '<div class="message"><div class="chip">'
+                //         + '<img style="width: 35px; height: 35px;" src="' + self.gravatarURL(msg.email) + '">' // Avatar
+                //         + msg.username
+                //     + '</div>'
+                //     + '<div class="message-text">' + msg.message + '</div></div>';
+
+                if (msg.message.toLowerCase().substr(0, 5) === "it me") {
+                    let duration = msg.message.substr(5).length;
+                    if (duration < 1.5) {
+                        duration = 1.5;
+                    }
+                    if (duration > 10) {
+                        duration = 10;
+                    }
+                    self.itMe(duration);
+                }
+
+                setTimeout(() => {
+                    var element = document.getElementById('chat-messages');
+                    if (!element) {
+                        return;
+                    }
+                    element.scrollTop = element.scrollHeight+100; // Auto scroll to the bottom
+
+                    if (self.chatSounds) {
+                        document.getElementById("chatSound").volume = 0.2;
+                        document.getElementById("chatSound").play();
+                    }
+                }, 100);
+
+            });
+
+            this.ws.onclose = function() {
+                self.error = "No websocket"
+            };
+        },
         creatingARoom: function() {
             this.creatingRoom = true;
             this.ws.send(

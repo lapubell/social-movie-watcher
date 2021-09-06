@@ -74,6 +74,8 @@ func handleMessages() {
 		}
 
 		msg.Message = checkForImageTransform(msg.Message)
+		msg.Message = checkForEmojiTransform(msg.Message)
+		msg.Message = checkForGiphy(msg.Message)
 
 		// default, send the chatted message to all clients
 		sendToAll(msg)
