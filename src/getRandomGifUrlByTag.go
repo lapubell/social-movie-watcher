@@ -273,7 +273,7 @@ func getRandomGifUrlByTag(t string) string {
 	key := rand.Intn(20)
 	randomGif := jsonData.Data[key]
 
-	return "Giphy: " + t + "<br /><img src='" +
+	return ":giphy " + t + "<br /><img src='" +
 		randomGif.Images.Downsized.URL +
 		"' width='" + randomGif.Images.Downsized.Width +
 		"' height='" + randomGif.Images.Downsized.Height +
