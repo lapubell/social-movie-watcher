@@ -58,9 +58,6 @@ bAudio.onclick = function() {
 }
 
 setInterval(() => {
-    if (!vid) {
-        return;
-    }
     document.getElementById("playback").textContent = fancyTimeFormat(vid.currentTime) + " of " + fancyTimeFormat(vid.duration);
 }, 1000);
 
@@ -242,7 +239,8 @@ var vm = new Vue({
             console.log("sending play signal to all")
             this.ws.send(
                 JSON.stringify({
-                    message: '!!video-play!!'
+                    message: '!!video-play!!',
+                    timestamp: Math.round(vid.currentTime)
                 }
             ));
             setTimeout(() => {
@@ -422,6 +420,17 @@ var vm = new Vue({
                 document.getElementById("video-app").classList.remove("disabled");
                 document.getElementById("app").classList.add("disabled");
                 this.enableVideoPlayer();
+
+                var tag = document.createElement("h1");
+                var text = document.createTextNode("YOU'LL BE SORRY");
+                tag.appendChild(text);
+                var element = document.querySelector("body");
+                element.appendChild(tag);
+
+                setTimeout(() => {
+                    element.removeChild(tag);
+                }, 1000);
+
                 return;
             }
 

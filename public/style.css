@@ -251,3 +251,13 @@ canvas {
     width: 100%;
     max-height: calc(100vh - 125px);
 }
+
+body > h1 {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    color: white;
+    font-size: 100px;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
