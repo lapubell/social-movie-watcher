@@ -33,12 +33,6 @@ vid.addEventListener('pause', function() {
     vm.drawerShown = true;
 });
 
-let fakeVideoFactory = function() {
-    return {
-        currentTime: 0,
-    };
-}
-
 
 var bPlay = document.getElementById("button-play");
 bPlay.onclick = function() {
@@ -58,7 +52,9 @@ bAudio.onclick = function() {
 }
 
 setInterval(() => {
-    document.getElementById("playback").textContent = fancyTimeFormat(vid.currentTime) + " of " + fancyTimeFormat(vid.duration);
+    let friendlyTime = fancyTimeFormat(vid.currentTime) + " of " + fancyTimeFormat(vid.duration);
+    document.getElementById("playback").textContent = friendlyTime;
+    vm.displayCurrentTime = friendlyTime;
 }, 1000);
 
 var vm = new Vue({
@@ -66,6 +62,7 @@ var vm = new Vue({
 
     data: {
         ws: null, // Our websocket
+        displayCurrentTime: "", // human friendly readout of the current time
         newMsg: '', // Holds new messages to be sent to the server
         error: '',
         chatContent: '', // A running list of chat messages displayed on the screen
@@ -137,13 +134,14 @@ var vm = new Vue({
                         if (!self.videoIsPlaying) {
                             vid.play();
                         }
+                        vid.currentTime = msg.video.timestamp;
                         self.videoIsPlaying = true
                     }
                     if (msg.newStatus === "pause") {
                         if (self.videoIsPlaying) {
                             vid.pause();
-                            vid.currentTime = msg.video.timestamp;
                         }
+                        vid.currentTime = msg.video.timestamp;
                         self.videoIsPlaying = false
                     }
                     if (msg.newStatus === "change") {
