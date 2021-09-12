@@ -33,6 +33,12 @@ vid.addEventListener('pause', function() {
     vm.drawerShown = true;
 });
 
+let fakeVideoFactory = function() {
+    return {
+        currentTime: 0,
+    };
+}
+
 
 var bPlay = document.getElementById("button-play");
 bPlay.onclick = function() {
@@ -52,6 +58,9 @@ bAudio.onclick = function() {
 }
 
 setInterval(() => {
+    if (!vid) {
+        return;
+    }
     document.getElementById("playback").textContent = fancyTimeFormat(vid.currentTime) + " of " + fancyTimeFormat(vid.duration);
 }, 1000);
 
@@ -338,6 +347,9 @@ var vm = new Vue({
             this.send();
         },
         isCurrentVid(video) {
+            if (!vid) {
+                return false;
+            }
             return "/video/"+video === vid.getAttribute("src")
         },
         itMe(seconds) {
@@ -367,7 +379,7 @@ var vm = new Vue({
         },
         removeVideoPlayer() {
             console.log("remove video player!");
-            vidParent.removeChild(vid);
+            vid.muted = true;
         },
         enableVideoPlayer() {
             console.log("enable video player!");
