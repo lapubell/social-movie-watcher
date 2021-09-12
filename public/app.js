@@ -20,6 +20,7 @@ function fancyTimeFormat(duration) // https://stackoverflow.com/questions/373322
 
 // good ol global variables, yay appending to the window object!
 var vid = document.getElementById("video-player");
+var vidParent = vid.parentNode;
 vid.addEventListener('ended', function() {
     vm.videoIsPlaying = false;
 });
@@ -54,7 +55,6 @@ setInterval(() => {
     document.getElementById("playback").textContent = fancyTimeFormat(vid.currentTime) + " of " + fancyTimeFormat(vid.duration);
 }, 1000);
 
-
 var vm = new Vue({
     el: '#app',
 
@@ -78,6 +78,9 @@ var vm = new Vue({
         lurkers: [],
         drawerShown: false,
         showChangeName: false,
+        windowSize: 0,
+        appFeatures: "both", // both|video|chat
+        autoJoin: false,
     },
 
     created: function() {
@@ -86,6 +89,15 @@ var vm = new Vue({
         this.audio = new Audio("/Pling-KevanGC-1485374730.mp3");
 
         this.wsInitialize();
+
+        this.windowSize = screen.width;
+
+        window.addEventListener("resize", (e) => {
+            this.windowSize = e.currentTarget.innerWidth;
+        });
+
+        this.autoJoin = localStorage.getItem("auto-join") === "true";
+        this.chatSounds = localStorage.getItem("chat-sounds") === "true";
     },
 
     methods: {
@@ -150,11 +162,6 @@ var vm = new Vue({
                     username: msg.username,
                     message: msg.message
                 });
-                // self.chatContent += '<div class="message"><div class="chip">'
-                //         + '<img style="width: 35px; height: 35px;" src="' + self.gravatarURL(msg.email) + '">' // Avatar
-                //         + msg.username
-                //     + '</div>'
-                //     + '<div class="message-text">' + msg.message + '</div></div>';
 
                 if (msg.message.toLowerCase().substr(0, 5) === "it me") {
                     let duration = msg.message.substr(5).length;
@@ -185,6 +192,13 @@ var vm = new Vue({
             this.ws.onclose = function() {
                 self.error = "No websocket"
             };
+
+            // check auto join
+            this.ws.onopen = function() {
+                if (localStorage.getItem("auto-join") === "true" && self.joined === false) {
+                    self.join();
+                }
+            }
         },
         creatingARoom: function() {
             this.creatingRoom = true;
@@ -350,10 +364,31 @@ var vm = new Vue({
                 confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
                 confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
             }, 250);
+        },
+        removeVideoPlayer() {
+            console.log("remove video player!");
+            vidParent.removeChild(vid);
+        },
+        enableVideoPlayer() {
+            console.log("enable video player!");
         }
     },
 
     watch: {
+        autoJoin() {
+            if (this.autoJoin) {
+                localStorage.setItem("auto-join", "true");
+                return;
+            }
+            localStorage.setItem("auto-join", "false");
+        },
+        chatSounds() {
+            if (this.chatSounds) {
+                localStorage.setItem("chat-sounds", "true");
+                return;
+            }
+            localStorage.setItem("chat-sounds", "false");
+        },
         joined() {
             var btnWrapper = document.getElementById("button-wrapper");
 
@@ -361,6 +396,36 @@ var vm = new Vue({
                 btnWrapper.classList.remove("hidden");
             } else {
                 btnWrapper.classList.add("hidden");
+            }
+        },
+        appFeatures() {
+            if (this.appFeatures === "chat") {
+                document.getElementById("video-app").classList.add("disabled");
+                document.getElementById("app").classList.remove("disabled");
+                this.removeVideoPlayer();
+                return;
+            }
+
+            if (this.appFeatures === "video") {
+                document.getElementById("video-app").classList.remove("disabled");
+                document.getElementById("app").classList.add("disabled");
+                this.enableVideoPlayer();
+                return;
+            }
+
+            if (this.appFeatures === "both") {
+                document.getElementById("video-app").classList.remove("disabled");
+                document.getElementById("app").classList.remove("disabled");
+                this.enableVideoPlayer();
+                return;
+            }
+
+            // unreachable code
+            console.log("invalid value for appFeatures");
+        },
+        windowSize() {
+            if (this.windowSize < 500) {
+                this.appFeatures = "chat";
             }
         }
     }

@@ -5,6 +5,7 @@
     <title>Social Video Watcher Party</title>
 
     <link rel="stylesheet" href="/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 <header>
@@ -17,8 +18,7 @@
 <main>
     <div class="flex">
         <div class="video-wrapper" id="video-app">
-            <video id="video-player" preload style="width: 100%; max-height: calc(100vh - 125px);">
-                <source src="/video/video.mp4" type="video/mp4">
+            <video id="video-player" preload src="/video/video.mp4" type="video/mp4">
             </video>
             <div id="button-wrapper" class="hidden">
                 <button id="button-play">Play</button>
@@ -52,13 +52,6 @@
                         <button @click="send">Send</button>
 
                         <button @click="showEmoji" id="trigger">Emoji</button>
-                    </div>
-                    <div style="color: white; display: block;">
-                        <input
-                            type="checkbox"
-                            style="opacity: 1; left: inherit; position: inherit;"
-                            v-model="chatSounds" />
-                        Chat Blip?
                     </div>
                 </div>
 
@@ -99,6 +92,28 @@
                             <span v-if="!showChangeName">Wanna change your name?</span>
                             <span v-else>Nevermind</span>
                         </button>
+                    </div>
+
+                    <div class="feature-changer">
+                        <p>Features: </p>
+                        <label>
+                            <input type="radio" value="both" v-model="appFeatures"> Chat and Video
+                        </label>
+                        <label>
+                            <input type="radio" value="chat" v-model="appFeatures"> Chat only
+                        </label>
+                        <label>
+                            <input type="radio" value="video" v-model="appFeatures"> Video only
+                        </label>
+                    </div>
+
+                    <div class="auto-join-wrapper">
+                        <label>
+                            <input type="checkbox" v-model="autoJoin" /> Auto Join?
+                        </label>
+                        <label>
+                            <input type="checkbox" v-model="chatSounds" /> Chat Blip?
+                        </label>
                     </div>
 
                 </div>
