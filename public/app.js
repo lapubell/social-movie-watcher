@@ -221,6 +221,16 @@ var vm = new Vue({
                     self.join();
                 }
             }
+
+            // scroll to bottom of chat, helpful if reconnecting
+            setTimeout(() => {
+                var element = document.getElementById('chat-messages');
+                if (!element) {
+                    return;
+                }
+                element.scrollTop = element.scrollHeight+100; // Auto scroll to the bottom
+
+            }, 250);
         },
         creatingARoom: function() {
             this.creatingRoom = true;

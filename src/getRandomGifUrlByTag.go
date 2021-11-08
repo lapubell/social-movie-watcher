@@ -63,11 +63,19 @@ type giphyResponse struct {
 		ResponseID string `json:"response_id"`
 	} `json:"meta"`
 }
+type emptyGiphyResponse struct {
+	Data []interface{} `json:"data"`
+	Meta struct {
+		Msg        string `json:"msg"`
+		Status     int    `json:"status"`
+		ResponseID string `json:"response_id"`
+	} `json:"meta"`
+}
 
 func getRandomGifUrlByTag(t string) string {
 	apikey := os.Getenv("GIPHY_API")
 	if apikey == "" {
-		return "Can't work with giphy without an API_KEY set 😭"
+		return ":giphy " + t + "<br />Can't work with giphy without an API_KEY set 😭"
 	}
 
 	s := "https://api.giphy.com/v1/gifs/random?" +
@@ -77,18 +85,25 @@ func getRandomGifUrlByTag(t string) string {
 
 	res, err := http.Get(s)
 	if err != nil {
-		return "Couldn't ask giphy for an image 😭"
+		return ":giphy " + t + "<br />Couldn't ask giphy for an image 😭"
 	}
 
 	resBytes, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return "Couldn't read giphy response 😭"
+		return ":giphy " + t + "<br />Couldn't read giphy response 😭"
 	}
 
 	var jsonData giphyResponse
 	err = json.Unmarshal(resBytes, &jsonData)
 	if err != nil {
-		return "Couldn't parse giphy response 😭: " + err.Error()
+		var emptyJsonData emptyGiphyResponse
+		err = json.Unmarshal(resBytes, &emptyJsonData)
+
+		if err != nil {
+			return ":giphy " + t + "<br />Something truly fucked up happened 😭"
+		}
+
+		return ":giphy " + t + "<br />Empty giphy response 😭"
 	}
 
 	randomGif := jsonData.Data
