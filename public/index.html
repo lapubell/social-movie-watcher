@@ -8,6 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
+
+<img src="/gniles.png" alt="Gniles!" id="gniles" class="" />
+
 <header>
     <nav>
         <div class="nav-wrapper">
@@ -44,7 +47,7 @@
                 </div>
 
                 <div class="input-field">
-                    <input type="text" v-model="newMsg" @keyup.enter="send" autofocus data-lpignore="true">
+                    <input type="text" v-model="newMsg" @keyup.enter.exact="send" @keyup.ctrl.enter.exact="giphySend" autofocus data-lpignore="true">
                 </div>
 
                 <div class="chat-controls">
@@ -138,12 +141,15 @@
                         <label>
                             <input type="radio" value="video" v-model="appFeatures"> Video only
                         </label>
-                    </div>
+                    </div><br /><br />
 
                     <div class="auto-join-wrapper">
                         <label>
                             <input type="checkbox" v-model="autoJoin" /> Auto Join?
-                        </label>
+                        </label><br />
+                        <label>
+                            <input type="checkbox" v-model="autoJumpToBottom" /> Auto Jump Chat To Bottom?
+                        </label><br />
                         <label>
                             <input type="checkbox" v-model="chatSounds" /> Chat Blip?
                         </label>

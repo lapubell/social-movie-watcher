@@ -51,6 +51,8 @@ bAudio.onclick = function() {
     vm.sendBackSeconds();
 }
 
+var gniles = document.getElementById("gniles");
+
 setInterval(() => {
     let friendlyTime = fancyTimeFormat(vid.currentTime) + " of " + fancyTimeFormat(vid.duration);
     document.getElementById("playback").textContent = friendlyTime;
@@ -84,6 +86,7 @@ var vm = new Vue({
         windowSize: 0,
         appFeatures: "both", // both|video|chat
         autoJoin: false,
+        autoJumpToBottom: false,
     },
 
     created: function() {
@@ -101,6 +104,7 @@ var vm = new Vue({
 
         this.autoJoin = localStorage.getItem("auto-join") === "true";
         this.chatSounds = localStorage.getItem("chat-sounds") === "true";
+        this.autoJumpToBottom = localStorage.getItem("jump-to-bottom") === "true";
     },
 
     methods: {
@@ -178,19 +182,33 @@ var vm = new Vue({
                     self.itMe(duration);
                 }
 
-                setTimeout(() => {
-                    var element = document.getElementById('chat-messages');
-                    if (!element) {
-                        return;
-                    }
-                    element.scrollTop = element.scrollHeight+100; // Auto scroll to the bottom
+                if (msg.message.toLowerCase().substr(0,6) === "gniles") {
+                    if (!gniles.classList.contains("peekaboo")) {
+                        gniles.classList.add("peekaboo");
 
-                    if (self.chatSounds) {
-                        document.getElementById("chatSound").volume = 0.2;
+                        setTimeout(() => {
+                            gniles.classList.remove("peekaboo");
+                        }, 2000);
+                    }
+                }
+
+                if (self.autoJumpToBottom) {
+                    setTimeout(() => {
+                        var element = document.getElementById('chat-messages');
+                        if (!element) {
+                            return;
+                        }
+                        element.scrollTop = element.scrollHeight+100; // Auto scroll to the bottom
+
+                    }, 250);
+                }
+
+                if (self.chatSounds) {
+                    setTimeout(() => {
+                        document.getElementById("chatSound").volume = 0.15;
                         document.getElementById("chatSound").play();
-                    }
-                }, 100);
-
+                    }, 100);
+                }
             });
 
             this.ws.onclose = function() {
@@ -227,6 +245,18 @@ var vm = new Vue({
                         email: this.email,
                         username: this.username,
                         message: this.newMsg
+                    }
+                ));
+                this.newMsg = ''; // Reset newMsg
+            }
+        },
+        giphySend: function () {
+            if (this.newMsg != '') {
+                this.ws.send(
+                    JSON.stringify({
+                        email: this.email,
+                        username: this.username,
+                        message: ":giphy " + this.newMsg
                     }
                 ));
                 this.newMsg = ''; // Reset newMsg
@@ -389,6 +419,13 @@ var vm = new Vue({
                 return;
             }
             localStorage.setItem("auto-join", "false");
+        },
+        autoJumpToBottom() {
+            if (this.autoJumpToBottom) {
+                localStorage.setItem("jump-to-bottom", "true");
+                return;
+            }
+            localStorage.setItem("jump-to-bottom", "false");
         },
         chatSounds() {
             if (this.chatSounds) {
