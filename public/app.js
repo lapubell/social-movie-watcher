@@ -52,6 +52,7 @@ bAudio.onclick = function() {
 }
 
 var gniles = document.getElementById("gniles");
+var newt = document.getElementById("newt");
 
 setInterval(() => {
     let friendlyTime = fancyTimeFormat(vid.currentTime) + " of " + fancyTimeFormat(vid.duration);
@@ -192,6 +193,16 @@ var vm = new Vue({
                     }
                 }
 
+                if (msg.message.toLowerCase().substr(0,8) === "mewstley" || msg.message.toLowerCase().substr(0,7) === "mewstly") {
+                    if (!newt.classList.contains("peekaboo")) {
+                        newt.classList.add("peekaboo");
+
+                        setTimeout(() => {
+                            newt.classList.remove("peekaboo");
+                        }, 2000);
+                    }
+                }
+
                 if (self.autoJumpToBottom) {
                     setTimeout(() => {
                         var element = document.getElementById('chat-messages');
@@ -326,11 +337,11 @@ var vm = new Vue({
 
         join: function () {
             if (!this.email) {
-                Materialize.toast('You must enter an email', 2000);
+                alert('You must enter an email');
                 return
             }
             if (!this.username) {
-                Materialize.toast('You must choose a username', 2000);
+                alert('You must choose a username');
                 return
             }
             this.email = this.email;

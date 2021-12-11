@@ -276,3 +276,17 @@ body > h1 {
 #gniles.peekaboo {
     transform: translateY(-100%);
 }
+
+#newt {
+    position: fixed;
+    bottom: 0;
+    right: 100%;
+    z-index: 10;
+    width: 17%;
+    transform: translateX(0);
+    transition: all .5s ease-out;
+}
+
+#newt.peekaboo {
+    transform: translateX(100%);
+}
