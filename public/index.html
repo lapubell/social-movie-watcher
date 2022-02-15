@@ -11,6 +11,7 @@
 
 <img src="/gniles.png" alt="Gniles!" id="gniles" class="" />
 <img src="/newt.png" alt="Mewstly!" id="newt" class="" />
+<img src="/so-tired.png" alt="I'm so tired..." id="charlie" class="" />
 
 <header>
     <nav>
@@ -48,7 +49,15 @@
                 </div>
 
                 <div class="input-field">
-                    <input type="text" v-model="newMsg" @keyup.enter.exact="send" @keyup.ctrl.enter.exact="giphySend" autofocus data-lpignore="true">
+                    <input
+                        type="text"
+                        v-model="newMsg"
+                        @keyup.enter.exact="send"
+                        @keyup.up.exact="repeatMessage"
+                        @keyup.ctrl.enter.exact="giphySend"
+                        @keyup.ctrl.up.exact="giphyLast"
+                        autofocus
+                        data-lpignore="true">
                 </div>
 
                 <div class="chat-controls">

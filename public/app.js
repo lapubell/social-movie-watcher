@@ -53,6 +53,9 @@ bAudio.onclick = function() {
 
 var gniles = document.getElementById("gniles");
 var newt = document.getElementById("newt");
+var charlie = document.getElementById("charlie");
+var lastTypedMessage = "";
+var mostRecentMessage = "";
 
 setInterval(() => {
     let friendlyTime = fancyTimeFormat(vid.currentTime) + " of " + fancyTimeFormat(vid.duration);
@@ -171,9 +174,12 @@ var vm = new Vue({
                     username: msg.username,
                     message: msg.message
                 });
+                mostRecentMessage = msg.message;
 
-                if (msg.message.toLowerCase().substr(0, 5) === "it me") {
-                    let duration = msg.message.substr(5).length;
+                var messageText = msg.message.toLowerCase();
+
+                if (messageText.substr(0, 5) === "it me") {
+                    let duration = messageText.substr(5).length;
                     if (duration < 1.5) {
                         duration = 1.5;
                     }
@@ -183,7 +189,7 @@ var vm = new Vue({
                     self.itMe(duration);
                 }
 
-                if (msg.message.toLowerCase().substr(0,6) === "gniles") {
+                if (messageText.substr(0,6) === "gniles") {
                     if (!gniles.classList.contains("peekaboo")) {
                         gniles.classList.add("peekaboo");
 
@@ -193,13 +199,37 @@ var vm = new Vue({
                     }
                 }
 
-                if (msg.message.toLowerCase().substr(0,8) === "mewstley" || msg.message.toLowerCase().substr(0,7) === "mewstly") {
+                if (messageText.substr(0,8) === "mewstley" || messageText.substr(0,7) === "mewstly") {
                     if (!newt.classList.contains("peekaboo")) {
                         newt.classList.add("peekaboo");
 
                         setTimeout(() => {
                             newt.classList.remove("peekaboo");
                         }, 2000);
+                    }
+                }
+
+                if (messageText.substr(0,3) === "i'm") {
+                    var messageAlphaChars = messageText.replace(/[^A-Z]+/gi,"")
+                    if (messageAlphaChars.substr(messageAlphaChars.length-5, 5) === 'tired') {
+                        if (!charlie.classList.contains("peekaboo")) {
+                            charlie.classList.add("peekaboo");
+
+                            var minDuration = 2000;
+                            var maxDuration = 10000;
+                            var dynamicDuration = (messageText.length - 13) * 1000;
+                            if (dynamicDuration > maxDuration) {
+                                dynamicDuration = maxDuration;
+                            }
+                            if (dynamicDuration < minDuration) {
+                                dynamicDuration = minDuration;
+                            }
+                            console.log("showing charlie for "+(dynamicDuration/1000)+" seconds");
+
+                            setTimeout(() => {
+                                charlie.classList.remove("peekaboo");
+                            }, dynamicDuration);
+                        }
                     }
                 }
 
@@ -259,6 +289,9 @@ var vm = new Vue({
                 })
             );
         },
+        repeatMessage: function () {
+            this.newMsg = lastTypedMessage;
+        },
         send: function () {
             if (this.newMsg != '') {
                 this.ws.send(
@@ -268,20 +301,19 @@ var vm = new Vue({
                         message: this.newMsg
                     }
                 ));
+                lastTypedMessage = this.newMsg; // for easy last message
                 this.newMsg = ''; // Reset newMsg
             }
         },
         giphySend: function () {
             if (this.newMsg != '') {
-                this.ws.send(
-                    JSON.stringify({
-                        email: this.email,
-                        username: this.username,
-                        message: ":giphy " + this.newMsg
-                    }
-                ));
-                this.newMsg = ''; // Reset newMsg
+                this.newMsg = ":giphy " + this.newMsg;
+                this.send();
             }
+        },
+        giphyLast: function () {
+            this.newMsg = mostRecentMessage;
+            this.giphySend();
         },
 
         sendPlay: function() {

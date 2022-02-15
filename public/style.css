@@ -290,3 +290,17 @@ body > h1 {
 #newt.peekaboo {
     transform: translateX(100%);
 }
+
+#charlie {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    z-index: 10;
+    width: 17%;
+    transform: translateX(100%);
+    transition: all .5s ease-out;
+}
+
+#charlie.peekaboo {
+    transform: translateX(0);
+}
