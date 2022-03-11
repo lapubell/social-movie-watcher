@@ -54,6 +54,7 @@ bAudio.onclick = function() {
 var gniles = document.getElementById("gniles");
 var newt = document.getElementById("newt");
 var charlie = document.getElementById("charlie");
+var moi = document.getElementById("moi");
 var lastTypedMessage = "";
 var mostRecentMessage = "";
 
@@ -186,7 +187,7 @@ var vm = new Vue({
                     if (duration > 10) {
                         duration = 10;
                     }
-                    self.itMe(duration);
+                    celebrate(duration);
                 }
 
                 if (messageText.substr(0,6) === "gniles") {
@@ -230,6 +231,16 @@ var vm = new Vue({
                                 charlie.classList.remove("peekaboo");
                             }, dynamicDuration);
                         }
+                    }
+                }
+
+                if ((messageText).substr(0, 9) === "c'est moi" || (messageText).substr(0, 6) === "it moi") {
+                    if (!moi.classList.contains("peekaboo")) {
+                        moi.classList.add("peekaboo");
+
+                        setTimeout(() => {
+                            moi.classList.remove("peekaboo");
+                        }, 2000);
                     }
                 }
 
@@ -430,31 +441,6 @@ var vm = new Vue({
                 return false;
             }
             return "/video/"+video === vid.getAttribute("src")
-        },
-        itMe(seconds) {
-            var duration = seconds * 1000;
-            var animationEnd = Date.now() + duration;
-            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-            function randomInRange(min, max) {
-                return Math.random() * (max - min) + min;
-            }
-            var canvasOverlay = document.getElementsByTagName("canvas")[0];
-            canvasOverlay.style.display = "block";
-
-            var interval = setInterval(function() {
-                var timeLeft = animationEnd - Date.now();
-
-                if (timeLeft <= 0) {
-                    canvasOverlay.style.display = "none";
-                    return clearInterval(interval);
-                }
-
-                var particleCount = 50 * (timeLeft / duration);
-                // since particles fall down, start a bit higher than random
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
-            }, 250);
         },
         removeVideoPlayer() {
             console.log("remove video player!");
