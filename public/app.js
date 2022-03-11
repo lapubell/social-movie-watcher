@@ -240,8 +240,9 @@ var vm = new Vue({
 
                         setTimeout(() => {
                             moi.classList.remove("peekaboo");
-                        }, 2000);
+                        }, 3000);
                     }
+                    celebrate(3);
                 }
 
                 if (self.autoJumpToBottom) {
