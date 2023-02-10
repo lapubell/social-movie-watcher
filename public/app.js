@@ -107,6 +107,13 @@ var vm = new Vue({
             this.windowSize = e.currentTarget.innerWidth;
         });
 
+        if (localStorage.getItem("jump-to-bottom") === null) {
+            localStorage.setItem("jump-to-bottom", "true");
+        }
+        if (localStorage.getItem("chat-sounds") === null) {
+            localStorage.setItem("chat-sounds", "true");
+        }
+
         this.autoJoin = localStorage.getItem("auto-join") === "true";
         this.chatSounds = localStorage.getItem("chat-sounds") === "true";
         this.autoJumpToBottom = localStorage.getItem("jump-to-bottom") === "true";
