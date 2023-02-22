@@ -1,6 +1,10 @@
+body, html {
+    height: 100vh;
+}
+
 body {
     display: flex;
-    min-height: 100vh;
+    height: 100vh;
     flex-direction: column;
     background-color: black;
     font-family: sans-serif;
@@ -318,4 +322,49 @@ body > h1 {
 
 #moi.peekaboo {
     transform: rotate(0deg);
+}
+
+#curse {
+    position: fixed;
+    top: 30px;
+    left: 100%;
+    width: 300px;
+    z-index: 100;
+    transform: translateX(0);
+    transition: transform 0.5s ease;
+}
+
+#curse img {
+    width: 100%;
+}
+
+#curse.potty-mouth {
+    transform: translateX(-300px);
+}
+
+#curse-ticket {
+    height: 0px;
+    width: 196px;
+    background: white;
+    transform: rotate(3deg);
+    top: 289px;
+    position: absolute;
+    left: 34px;
+    transition: height .5s linear;
+    overflow: hidden;
+}
+
+#curse-ticket.potty-mouth {
+    height: 200px;
+}
+
+#curse-ticket div {
+    height: 200px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: absolute;
+    bottom: 0;
 }
