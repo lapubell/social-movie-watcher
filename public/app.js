@@ -890,7 +890,7 @@ const curses = [
     "sodomize",
     "sodomy",
     "spastic",
-    "spic",
+    // "spic",
     "splooge",
     "splooge moose",
     "spooge",
